@@ -89,6 +89,18 @@ Details:
 Every create, capture and refund call sends a `PayPal-Request-Id`, so a retried request is idempotent. Penny books the
 fee PayPal actually charged, read from the capture's `seller_receivable_breakdown`.
 
+## The AG Grid ledger
+
+Penny's ledger in the back office is built on AG Grid Community (`ag-grid-react`). It loads only the modules it uses.
+
+- **Live rows.** Entries arrive over server-sent events. `getRowId` keeps each row stable, so a new sale, payout or
+  refund slides in, and a cell flashes when PayPal confirms it.
+- **The crew drives the grid.** When Maryam asks "Show this week's refunds", Claude calls the `show_ledger` tool. The
+  grid then applies that view as an external filter.
+- **The owner's search** is AG Grid's quick filter across orders, people and PayPal IDs.
+- **A pinned totals row** follows whatever is visible: amount, PayPal fees and net.
+- **CSV export** hands the visible rows to an accountant.
+
 ## Safety model
 
 - **No AI on the money path.** Claude can look things up and prepare requests. Payouts and large refunds are only
